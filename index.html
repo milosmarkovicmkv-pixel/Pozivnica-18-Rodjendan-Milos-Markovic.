@@ -334,19 +334,34 @@
 
   <script>
     const form = document.getElementById("rsvpForm");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwVDjwgkioR0MpMKDTyom0jv6V5DyLU2kEVhh-Z7OZQinU88lNTcIotwm6cI3LkhLQvGA/exec";
 
-    form.addEventListener("submit", function(event) {
-
+    form.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      document.getElementById("formContent").style.display = "none";
-      document.getElementById("successMessage").style.display = "block";
+      const submitButton = form.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = "ŠALJE SE...";
 
-      window.scrollTo({
-        top: document.getElementById("successMessage").offsetTop,
-        behavior: "smooth"
-      });
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          mode: "no-cors",
+          body: new FormData(form)
+        });
 
+        document.getElementById("formContent").style.display = "none";
+        document.getElementById("successMessage").style.display = "block";
+
+        window.scrollTo({
+          top: document.getElementById("successMessage").offsetTop,
+          behavior: "smooth"
+        });
+      } catch (error) {
+        submitButton.disabled = false;
+        submitButton.textContent = "POTVRDI ODGOVOR";
+        alert("Došlo je do greške. Molimo Vas pokušajte ponovo.");
+      }
     });
   </script>
 
